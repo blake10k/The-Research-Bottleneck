@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The State of Research & The SuiteR Solution</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Theme Definitions --- */
+        :root {
+            --color-primary-blue: #2563eb; /* Vibrant Blue for actions/highlights */
+            --color-dark-blue: #1e3a8a;    /* Deep Navy for headers/cards */
+            --color-pain-grey: #64748b;    /* Medium Slate Grey for negative data */
+            --color-light-grey-bg: #f8fafc; /* Page background */
+            --color-white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-light-grey-bg);
+            color: #334155; /* Slate 700 text */
+        }
+        
+        /* --- Layout & Components --- */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .flow-step {
+            background-color: var(--color-white);
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            margin: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .flow-step-icon {
+            font-size: 2.5rem;
+            line-height: 1;
+            margin-bottom: 0.75rem;
+            color: var(--color-dark-blue);
+        }
+        .flow-arrow {
+            font-size: 2.5rem;
+            color: #cbd5e1; /* Lighter grey for subtle flow */
+            align-self: center;
+            margin: 0 1rem;
+        }
+        .suite-wrapper {
+            border: 3px dashed var(--color-primary-blue);
+            background-color: rgba(37, 99, 235, 0.05); /* Very light blue tint */
+            padding: 1rem;
+            border-radius: 1rem;
+        }
+        h1, h2, h3 {
+            color: var(--color-dark-blue);
+        }
+        .stat-card {
+            background-color: var(--color-dark-blue);
+            color: var(--color-white);
+        }
+        .cta-button {
+            background-color: var(--color-primary-blue);
+            color: var(--color-white);
+            transition: background-color 0.3s;
+        }
+        .cta-button:hover {
+            background-color: #1d4ed8; /* Darker shade of primary blue */
+        }
+        .table-header {
+            background-color: #f1f5f9; /* Slate 100 */
+            color: var(--color-dark-blue);
+        }
+        .solution-highlight {
+            color: var(--color-primary-blue);
+            font-weight: 600;
+        }
+        .pain-highlight {
+            color: #94a3b8; /* Lighter grey for less emphasis on the bad numbers */
+        }
+    </style>
+</head>
+<body class="text-slate-700">
+
+    <main class="container mx-auto p-4 md:p-8 max-w-7xl">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">The Research Bottleneck</h1>
+            <p class="text-xl text-slate-600 max-w-3xl mx-auto">Modern research is powerful, but researchers are bogged down by fragmented tools, steep learning curves, and manual grunt work. The promise of discovery is trapped behind a wall of inefficiency.</p>
+        </header>
+
+        <section class="mb-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="stat-card rounded-lg shadow-lg p-6 text-center flex flex-col justify-center">
+                    <div class="text-6xl font-bold" style="color: var(--color-primary-blue);">82%</div>
+                    <div class="text-lg mt-2 text-slate-200">Of PhD students & postdocs report "significant frustration" with their current software stack.</div>
+                </div>
+                <div class="stat-card rounded-lg shadow-lg p-6 text-center flex flex-col justify-center">
+                    <div class="text-6xl font-bold pain-highlight">15+</div>
+                    <div class="text-lg mt-2 text-slate-200">Hours per week spent on manual tasks like lit reviews and formatting, not analysis.</div>
+                </div>
+                <div class="stat-card rounded-lg shadow-lg p-6 text-center flex flex-col justify-center">
+                    <div class="text-6xl font-bold pain-highlight">45%</div>
+                    <div class="text-lg mt-2 text-slate-200">Of researchers feel their analysis is limited by their knowledge of code or complex software.</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-8">Uncovering the Core "Pain Points"</h2>
+            <p class="text-lg text-slate-600 max-w-3xl mx-auto text-center mb-10">Analysis of researcher forums and social media reveals a clear consensus on the biggest daily frustrations. These issues create a significant drag on productivity and stifle innovation.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-center mb-4">Top Researcher Frustrations</h3>
+                    <div class="chart-container">
+                        <canvas id="painPointsChart"></canvas>
+                    </div>
+                    <p class="text-sm text-slate-500 mt-4 text-center">A steep learning curve and fragmented tools dominate researcher complaints, followed closely by the manual "grunt work" of dissemination and time-consuming literature reviews.</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-center mb-4">Project Time: Setup vs. Analysis</h3>
+                    <div class="chart-container">
+                        <canvas id="timeSinkChart"></canvas>
+                    </div>
+                    <p class="text-sm text-slate-500 mt-4 text-center">Legacy tools (R/Python, SPSS) require a heavy time investment in setup and coding, delaying actual analysis. SuiteR's no-code model flips this, maximizing time for interpretation.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-8">Today's Fragmented Workflow: A Broken Process</h2>
+            <p class="text-lg text-slate-600 max-w-3xl mx-auto text-center mb-10">The typical research project forces academics to juggle multiple, disconnected applications. This creates friction, increases the risk of errors, and wastes valuable time on importing, exporting, and reformatting.</p>
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flow-step">
+                    <div class="flow-step-icon">📚</div>
+                    <h4 class="font-semibold text-slate-800">1. Lit Review</h4>
+                    <span class="text-sm text-slate-500">(e.g., Zotero, Mendeley)</span>
+                </div>
+                <div class="flow-arrow hidden md:block">&rarr;</div>
+                <div class="flow-step">
+                    <div class="flow-step-icon">💻</div>
+                    <h4 class="font-semibold text-slate-800">2. Stats</h4>
+                    <span class="text-sm text-slate-500">(e.g., R, SPSS, JASP)</span>
+                </div>
+                <div class="flow-arrow hidden md:block">&rarr;</div>
+                <div class="flow-step">
+                    <div class="flow-step-icon">📊</div>
+                    <h4 class="font-semibold text-slate-800">3. Visualization</h4>
+                    <span class="text-sm text-slate-500">(e.g., Prism, Python)</span>
+                </div>
+                <div class="flow-arrow hidden md:block">&rarr;</div>
+                <div class="flow-step">
+                    <div class="flow-step-icon">📄</div>
+                    <h4 class="font-semibold text-slate-800">4. Dissemination</h4>
+                    <span class="text-sm text-slate-500">(e.g., Word, InDesign)</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-8">The SuiteR Solution: An Integrated Ecosystem</h2>
+            <p class="text-lg text-slate-600 max-w-3xl mx-auto text-center mb-10">SuiteR consolidates the entire research lifecycle into one no-code, AI-powered platform. By connecting every step, SuiteR eliminates fragmentation and allows researchers to move seamlessly from idea to publication.</p>
+            <div class="suite-wrapper">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="flow-step" style="border-color: var(--color-primary-blue);">
+                        <div class="flow-step-icon" style="color: var(--color-primary-blue);">🤖</div>
+                        <h4 class="font-semibold text-slate-800">1. AI Research</h4>
+                        <span class="text-sm text-slate-500">(Lit Review, Research Gaps, Hypothesis & Methodology Development)</span>
+                    </div>
+                    <div class="flow-arrow hidden md:block" style="color: var(--color-primary-blue);">&rarr;</div>
+                    <div class="flow-step" style="border-color: var(--color-primary-blue);">
+                        <div class="flow-step-icon" style="color: var(--color-primary-blue);">📈</div>
+                        <h4 class="font-semibold text-slate-800">2. AI Analysis</h4>
+                        <span class="text-sm text-slate-500">(No-Code Stats & Viz)</span>
+                    </div>
+                    <div class="flow-arrow hidden md:block" style="color: var(--color-primary-blue);">&rarr;</div>
+                    <div class="flow-step" style="border-color: var(--color-primary-blue);">
+                        <div class="flow-step-icon" style="color: var(--color-primary-blue);">💡</div>
+                        <h4 class="font-semibold text-slate-800">3. AI Publishing</h4>
+                        <span class="text-sm text-slate-500">(Poster & Citation Gen)</span>
+                    </div>
+                </div>
+                <h3 class="text-2xl font-bold text-center mt-6" style="color: var(--color-primary-blue);">All in One Platform</h3>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-8">From Pain Point to Productivity</h2>
+            <p class="text-lg text-slate-600 max-w-3xl mx-auto text-center mb-10">SuiteR's features are directly designed to solve the most common and costly problems researchers face. Here is a direct comparison of the "before" and "after" for a typical researcher.</p>
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="table-header">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">The Problem</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Researcher's Quote</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">The SuiteR Solution</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-slate-800">Steep Learning Curve</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-slate-500 italic">"I'm a biologist, not a coder. Why do I need to learn R?"</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm solution-highlight">No-Code Analytics & Viz Tool</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-slate-800">Time-Consuming Lit Review</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-slate-500 italic">"I'm drowning in papers and can't find the core themes."</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm solution-highlight">AI Research Assistant</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-slate-800">Tool Fragmentation</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-slate-500 italic">"My workflow is just exporting and reformatting data."</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm solution-highlight">Unified All-in-One Platform</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-slate-800">Dissemination "Grunt Work"</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-slate-500 italic">"I just spent 3 hours fixing my APA citations and poster."</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm solution-highlight">Poster & Citation Generators</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="text-center bg-white rounded-lg shadow-lg p-8 md:p-12">
+            <h2 class="text-3xl font-bold mb-4">Ready to Transform Your Research?</h2>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto mb-8">Accessible to over 100,000 researchers, students, and analysts, SuiteR guarantees to accelerate discovery and save 99% of time. Stop wrestling with tools and start generating knowledge.</p>
+            <!-- Added target="_blank" to ensure the link opens correctly -->
+            <a href="https://www.suiterai.com/" target="_blank" rel="noopener noreferrer" class="cta-button font-bold py-3 px-8 rounded-lg text-lg inline-block">
+                Start Your 7-Day Free Trial
+            </a>
+            <p class="text-sm text-slate-500 mt-4">No credit card required. Cancel anytime.</p>
+        </section>
+
+    </main>
+
+    <footer class="text-center p-6 mt-8">
+        <p class="text-sm text-slate-500">&copy; 2025 SuiteR. All rights reserved. This is a conceptual infographic.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- Theme Colors for Charts ---
+            const themePrimaryBlue = '#2563eb';
+            
+            // Blue scale for doughnut chart
+            const blueDeep = '#1e3a8a';   // Darkest
+            const blueMedium = '#3b82f6'; // Medium
+            const blueLight = '#60a5fa';  // Light
+            const blueVeryLight = '#93c5fd'; // Very Light
+            
+            const themeGreyLight = '#94a3b8';
+
+            // Common tooltip handler
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                    return label.join(' ');
+                } else {
+                    return label;
+                }
+            };
+
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#334155' }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: tooltipTitleCallback
+                        }
+                    }
+                }
+            };
+
+            // 1. Doughnut Chart with Legend Fix
+            const ctxPainPoints = document.getElementById('painPointsChart');
+            if (ctxPainPoints) {
+                new Chart(ctxPainPoints, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [
+                            'Steep Learning Curve', 
+                            ['Tool', 'Fragmentation'], 
+                            ['Dissemination', 'Grunt Work'], 
+                            ['Time-Consuming', 'Lit Review']
+                        ],
+                        datasets: [{
+                            label: 'Share of Frustrations',
+                            data: [35, 25, 20, 20],
+                            backgroundColor: [
+                                blueDeep,       // #1e3a8a
+                                blueMedium,     // #3b82f6
+                                blueLight,      // #60a5fa
+                                blueVeryLight   // #93c5fd
+                            ],
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: { 
+                        ...commonOptions,
+                        plugins: {
+                            ...commonOptions.plugins,
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#334155',
+                                    // CUSTOM GENERATOR: Flattens array labels for the legend
+                                    generateLabels: function(chart) {
+                                        const data = chart.data;
+                                        if (data.labels.length && data.datasets.length) {
+                                            return data.labels.map((label, i) => {
+                                                const meta = chart.getDatasetMeta(0);
+                                                const style = meta.controller.getStyle(i);
+                                                
+                                                // Flatten array labels to single string for legend clarity
+                                                const text = Array.isArray(label) ? label.join(' ') : label;
+
+                                                return {
+                                                    text: text,
+                                                    fillStyle: style.backgroundColor,
+                                                    strokeStyle: style.borderColor,
+                                                    lineWidth: style.borderWidth,
+                                                    hidden: !chart.getDataVisibility(i),
+                                                    index: i
+                                                };
+                                            });
+                                        }
+                                        return [];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 2. Bar Chart (Standard)
+            const ctxTimeSink = document.getElementById('timeSinkChart');
+            if (ctxTimeSink) {
+                new Chart(ctxTimeSink, {
+                    type: 'bar',
+                    data: {
+                        labels: ['R / Python', 'SPSS / STATA', 'JASP / Jamovi', 'SuiteR'],
+                        datasets: [
+                            {
+                                label: 'Tool Setup & Coding (Pain)',
+                                data: [30, 10, 5, 1],
+                                backgroundColor: themeGreyLight,
+                            },
+                            {
+                                label: 'Actual Analysis (Value)',
+                                data: [10, 15, 12, 29],
+                                backgroundColor: themePrimaryBlue, 
+                            }
+                        ]
+                    },
+                    options: {
+                        ...commonOptions,
+                        scales: {
+                            x: {
+                                stacked: true,
+                                grid: { display: false },
+                                ticks: { color: '#334155' }
+                            },
+                            y: {
+                                stacked: true,
+                                title: {
+                                    display: true,
+                                    text: 'Avg. Hours per Project',
+                                    color: '#334155'
+                                },
+                                ticks: { color: '#334155' }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
